@@ -185,9 +185,7 @@ void visualImageDataAvailable(int pixelCount, uint8_t *data) {
     }
 
     /* Factor this frame into the running average */
-    for (uint32_t i = 0; i < (pixelCount * 3); i++) {
-        activeBaseAddr[i] = ((activeBaseAddr[i] * ovenState.nImages_visual) + data[i]) / (ovenState.nImages_visual + 1);
-    }
+    updateRunningAverage(activeBaseAddr, data, pixelCount * 3, ovenState.nImages_visual);
 
     /* Increment image count */
     ovenState.nImages_visual++;
@@ -228,9 +226,7 @@ void infraredImageDataAvailable(int pixelCount, uint8_t *data) {
     }
 
     /* Factor this frame into the running average */
-    for (uint32_t i = 0; i < (pixelCount * 2); i++) {
-        activeBaseAddr[i] = ((activeBaseAddr[i] * ovenState.nImages_infrared) + data[i]) / (ovenState.nImages_infrared + 1);
-    }
+    updateRunningAverage(activeBaseAddr, data, pixelCount * 2, ovenState.nImages_infrared);
 
     /* Increment image count */
     ovenState.nImages_infrared++;
@@ -302,4 +298,26 @@ void controlHeaters(void) {
     dummy_updateSlowPWM(2, ovenState.foodState.heaterCommand.h2);
     dummy_updateSlowPWM(3, ovenState.foodState.heaterCommand.h3);
     dummy_updateSlowPWM(4, ovenState.foodState.heaterCommand.h4);
+}
+
+/**
+ * @brief 
+ *  Function to update a running average array with new values.
+ *  Designed to support unit testing.
+ * 
+ * @param average 
+ *          Array storing the average values
+ * @param newValues
+ *          New data array to include in the average
+ * @param byteLength 
+ *          Byte length of the data arrays
+ * @param n_samples 
+ *          Number of samples in the array prior to the new one
+ */
+void updateRunningAverage(uint8_t *average, uint8_t *newValues, uint32_t byteLength, uint32_t n_samples) {
+    /* Factor the new data into the running average */
+    for (uint32_t i = 0; i < byteLength; i++) {
+        average[i] = ((average[i] * n_samples) + newValues[i]) / (n_samples + 1);
+    }
+
 }

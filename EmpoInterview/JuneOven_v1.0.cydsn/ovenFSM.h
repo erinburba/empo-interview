@@ -85,6 +85,7 @@ void setupNetworkConnection(void);
 void setupAppUser(void);
 void controlHeaters(void);
 void processedImageDataAvailable(float completionLevel, heaterCommand_t heaterCommand, uint32_t errorCode);
+void updateRunningAverage(uint8_t *average, uint8_t newValues, uint32_t byteLength, uint32_t n_samples);
 
 /* Provided */
 void startVisualCamera(void);
